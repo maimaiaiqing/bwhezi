@@ -1,312 +1,1024 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>百万盒子站</title>
-<style>
-body {
-  margin: 0;
-  background-color: yellow;
-  font-family: Arial, sans-serif;
-  text-align: center;
-}
-
-/* 轮播图样式 */
-.carousel {
-  width: 100%;
-  max-width: 800px;
-  height: 228px;
-  margin: 20px auto;
-  overflow: hidden;
-  position: relative;
-}
-.slide-wrapper {
-  width: 400%;
-  height: 100%;
-  display: flex;
-  animation: slide 16s infinite;
-}
-.slide {
-  width: 25%;
-  flex-shrink: 0;
-}
-.slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
-@keyframes slide {
-  0% {transform: translateX(0);}
-  20% {transform: translateX(0);}
-  25% {transform: translateX(-25%);}
-  45% {transform: translateX(-25%);}
-  50% {transform: translateX(-50%);}
-  70% {transform: translateX(-50%);}
-  75% {transform: translateX(-75%);}
-  95% {transform: translateX(-75%);}
-  100% {transform: translateX(0);}
-}
-
-/* 按钮样式 */
-.buttons {
-  margin: 20px 0;
-}
-button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
-}
-button:hover {
-  background-color: #45a049;
-}
-
-/* 内容页，隐藏和显示 */
-.page {
-  display: none;
-  padding: 10px 0;
-}
-.page.active {
-  display: block;
-}
-
-/* 4列布局 */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(4, 23%);
-  gap: 10px;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* 图片自适应 */
-.grid-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: contain;
-  border-radius: 4px;
-}
-
-span {
-  display: block;
-  padding: 8px 0;
-  font-size: 14px;
-  color: #333;
-}
-
-/* 适配手机屏幕 */
-@media(max-width: 900px){
-  .grid-container {
-    grid-template-columns: repeat(4, 23%);
-  }
-}
-
-.footer {
-  margin: 20px 0;
-  font-size: 14px;
-  color: #333;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>影视天堂 - 手机版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            max-width: 640px;
+            margin: 0 auto;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* 电脑端居中显示 */
+        @media (min-width: 768px) {
+            body {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                border-radius: 20px;
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+        
+        /* 轮播图样式 */
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        
+        .carousel-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .carousel-item {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .carousel-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            pointer-events: none;
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        
+        .carousel-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .carousel-indicator.active {
+            background: #ffffff;
+        }
+        
+        /* 分类图标样式 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            background: #1a1a1a;
+        }
+        
+        .category-item {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .category-item:active {
+            transform: scale(0.95);
+        }
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 8px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .category-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .category-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 电影列表样式 */
+        .movie-section {
+            padding: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .more-link {
+            font-size: 14px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .movie-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .movie-item {
+            position: relative;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1a1a1a;
+            display: flex;
+            min-height: 100px;
+            height: auto;
+        }
+        
+        .movie-poster {
+            width: 150px;
+            height: auto;
+            min-height: 100px;
+            max-height: 150px;
+            object-fit: contain;
+            flex-shrink: 0;
+            background: #000;
+        }
+        
+        .movie-content {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+        }
+        
+        .movie-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .movie-desc {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .movie-rating {
+            background: rgba(255,215,0,0.2);
+            color: #ffd700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .movie-duration {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .movie-item:hover .play-overlay {
+            opacity: 1;
+        }
+        
+        .play-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        /* 播放器模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            z-index: 1001;
+            cursor: pointer;
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 脚注样式 */
+        footer {
+            background: #1a1a1a;
+            padding: 30px 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
+    <!-- 轮播图 -->
+    <section class="carousel">
+        <div class="carousel-inner" id="carouselInner">
+            <!-- 轮播图项目 1 -->
+            <div class="carousel-item" onclick="goToLink('https://45660801.sizled.com/?cid=310446')">
+                <img src="https://img.alicdn.com/imgextra/i4/4183327079/O1CN01AwtIru22AEp7NzMLD_!!4183327079.gif" alt="轮播图1">
+                <div class="carousel-overlay">
+                    <h2 class="text-xl font-bold">澳门</h2>
+                    <p class="text-sm text-gray-300">最新上映，精彩不断</p>
+                </div>
+            </div>
+            <!-- 轮播图项目 2 -->
+            <div class="carousel-item" onclick="goToLink('https://45660801.sizled.com/?cid=310446')">
+                <img src="https://imgsa.baidu.com/forum/pic/item/0b55b319ebc4b745a48c520589fc1e178a82158d.jpg" alt="轮播图2">
+                <div class="carousel-overlay">
+                    <h2 class="text-xl font-bold">独家剧集</h2>
+                    <p class="text-sm text-gray-300">全网独播，不容错过</p>
+                </div>
+            </div>
+            <!-- 轮播图项目 3 -->
+            <div class="carousel-item" onclick="goToLink('https://45660801.sizled.com/?cid=310446')">
+                <img src="https://pg777111.img3784715638.com:8585/8888/pg507/320-185.gif" alt="轮播图3">
+                <div class="carousel-overlay">
+                    <h2 class="text-xl font-bold">开元棋牌</h2>
+                    <p class="text-sm text-gray-300">注册送888</p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-indicators" id="carouselIndicators"></div>
+    </section>
 
-<!-- 轮播图 -->
-<div class="carousel">
-  <div class="slide-wrapper">
-    <div class="slide"><a href="https://ka.xmassbst3629.com/"><img src="https://raw.githubusercontent.com/xingxing890/ai/refs/heads/main/ai/images/animation.gif" alt="轮播1"></a></div>
-    <div class="slide"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://raw.githubusercontent.com/xingxing890/ai/refs/heads/main/ai/images/1928349127170609154.avif" alt="轮播2"></a></div>
-    <div class="slide"><a href="https://081h76vo.fthred.com/mqtxnm/?cid=412409" target="_blank"><img src="https://raw.githubusercontent.com/xingxing890/ai/refs/heads/main/ai/images/1928349127170609154.avif" alt="轮播3"></a></div>
-    <div class="slide"><a href="https://tikotok-155-cew-17-qzo-37-vivo.su7ultra.山东师范大学.com:13835/m4Z97" target="_blank"><img src="https://raw.githubusercontent.com/xingxing890/ai/refs/heads/main/ai/images/animation.gif" alt="轮播4"></a></div>
-  </div>
-</div>
+    <!-- 分类图标 -->
+    <section class="category-grid">
+        <!-- 分类图标 1 - 电影 -->
+        <a href="https://example.com/movies" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-movie/50/50" alt="电影图标">
+            </div>
+            <div class="category-name">电影</div>
+        </a>
+        <!-- 分类图标 2 - 电视剧 -->
+        <a href="https://example.com/tv" class="category-item">
+            <div class="category-icon">
+                <img src="https://fcw1.site/i/2024/12/31/qu0xc4.gif" alt="电视剧图标">
+            </div>
+            <div class="category-name">电视剧</div>
+        </a>
+        <!-- 分类图标 3 - 综艺 -->
+        <a href="https://example.com/variety" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-variety/50/50" alt="综艺图标">
+            </div>
+            <div class="category-name">综艺</div>
+        </a>
+        <!-- 分类图标 4 - 动漫 -->
+        <a href="https://example.com/anime" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-anime/50/50" alt="动漫图标">
+            </div>
+            <div class="category-name">动漫</div>
+        </a>
+        <!-- 分类图标 5 - 纪录片 -->
+        <a href="https://example.com/documentary" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-documentary/50/50" alt="纪录片图标">
+            </div>
+            <div class="category-name">纪录片</div>
+        </a>
+        <!-- 分类图标 6 - 体育 -->
+        <a href="https://example.com/sports" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-sports/50/50" alt="体育图标">
+            </div>
+            <div class="category-name">体育</div>
+        </a>
+        <!-- 分类图标 7 - 音乐 -->
+        <a href="https://example.com/music" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-music/50/50" alt="音乐图标">
+            </div>
+            <div class="category-name">音乐</div>
+        </a>
+        <!-- 分类图标 8 - 游戏 -->
+        <a href="https://example.com/games" class="category-item">
+            <div class="category-icon">
+                <img src="https://collision3550.top/b7307118fb42b64017dea3e5f313a9c8.gif" alt="游戏图标">
+            </div>
+            <div class="category-name">游戏</div>
+        </a>
+		<!-- 分类图标 1 - 电影 -->
+        <a href="https://example.com/movies" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-movie/50/50" alt="电影图标">
+            </div>
+            <div class="category-name">电影</div>
+        </a>
+        <!-- 分类图标 2 - 电视剧 -->
+        <a href="https://example.com/tv" class="category-item">
+            <div class="category-icon">
+                <img src="https://fcw1.site/i/2024/12/31/qu0xc4.gif" alt="电视剧图标">
+            </div>
+            <div class="category-name">电视剧</div>
+        </a>
+        <!-- 分类图标 3 - 综艺 -->
+        <a href="https://example.com/variety" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-variety/50/50" alt="综艺图标">
+            </div>
+            <div class="category-name">综艺</div>
+        </a>
+        <!-- 分类图标 4 - 动漫 -->
+        <a href="https://example.com/anime" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-anime/50/50" alt="动漫图标">
+            </div>
+            <div class="category-name">动漫</div>
+        </a>
+        <!-- 分类图标 5 - 纪录片 -->
+        <a href="https://example.com/documentary" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-documentary/50/50" alt="纪录片图标">
+            </div>
+            <div class="category-name">纪录片</div>
+        </a>
+        <!-- 分类图标 6 - 体育 -->
+        <a href="https://example.com/sports" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-sports/50/50" alt="体育图标">
+            </div>
+            <div class="category-name">体育</div>
+        </a>
+        <!-- 分类图标 7 - 音乐 -->
+        <a href="https://example.com/music" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-music/50/50" alt="音乐图标">
+            </div>
+            <div class="category-name">音乐</div>
+        </a>
+        <!-- 分类图标 8 - 游戏 -->
+        <a href="https://example.com/games" class="category-item">
+            <div class="category-icon">
+                <img src="https://collision3550.top/b7307118fb42b64017dea3e5f313a9c8.gif" alt="游戏图标">
+            </div>
+            <div class="category-name">游戏</div>
+        </a>
+    </section>
 
-  <!--<script src="/main/template/m1938pc/pic/dl"></script>-->
+    <!-- 热门推荐 -->
+    <section class="movie-section">
+        <div class="section-title">
+            <span>热门推荐</span>
+            <a href="https://example.com/hot-more" class="more-link">更多 <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="movie-grid" id="hotMovies">
+            <!-- 电影项目 1 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '国产四级片')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250711-1/d11a6e7a5a6d46f337c0ac5f5944a93c.png" alt="国产四级片" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">国产四级片</div>
+                        <div class="movie-desc">【国产四级片】三点全露 在VCD碟片不能播的片段</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">9.2</div>
+                        <div class="movie-duration">73分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 2 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '满江红')">
+                <img src="https://picsum.photos/seed/movie2/320/180" alt="满江红" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">满江红</div>
+                        <div class="movie-desc">南宋绍兴年间，岳飞死后四年，秦桧率兵与金国会谈。会谈前夜，金国使者死在宰相驻地。</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.8</div>
+                        <div class="movie-duration">159分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 3 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '无名')">
+                <img src="https://picsum.photos/seed/movie3/280/200" alt="无名" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">无名</div>
+                        <div class="movie-desc">1941年12月7日，日本偷袭珍珠港。抗战时期的上海，一位地下工作者执行秘密任务。</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.5</div>
+                        <div class="movie-duration">128分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 4 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '深海')">
+                <img src="https://picsum.photos/seed/movie4/300/160" alt="深海" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">深海</div>
+                        <div class="movie-desc">一个少女在神秘的深海世界中寻找记忆，探索内心深处的秘密。</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.3</div>
+                        <div class="movie-duration">112分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 5 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '中国乒乓')">
+                <img src="https://picsum.photos/seed/movie5/250/150" alt="中国乒乓" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">中国乒乓</div>
+                        <div class="movie-desc">讲述了90年代中国乒乓球队在低谷时期重新崛起，最终夺得世界冠军的故事。</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.0</div>
+                        <div class="movie-duration">140分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 6 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '熊出没')">
+                <img src="https://picsum.photos/seed/movie6/300/180" alt="熊出没" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">熊出没</div>
+                        <div class="movie-desc">光头强意外缩小，与熊大熊二一起展开了一段奇妙的冒险旅程。</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">7.8</div>
+                        <div class="movie-duration">113分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<script>
-// &#24191;&#21578;&#23610;&#23544;500x100
-var sUserAgent = navigator.userAgent;
-var style='';
-style +='<style>';
-style +='.dpClass{position: fixed; left: 0px; right: 0px; z-index: 999;margin: 0 auto;}';
-var phoneHeight = 100;
-var pcHeight = 0;
+<!-- 分类图标 -->
+    <section class="category-grid">
+        <!-- 分类图标 1 - 电影 -->
+        <a href="https://example.com/movies" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-movie/50/50" alt="电影图标">
+            </div>
+            <div class="category-name">电影</div>
+        </a>
+        <!-- 分类图标 2 - 电视剧 -->
+        <a href="https://example.com/tv" class="category-item">
+            <div class="category-icon">
+                <img src="https://fcw1.site/i/2024/12/31/qu0xc4.gif" alt="电视剧图标">
+            </div>
+            <div class="category-name">电视剧</div>
+        </a>
+        <!-- 分类图标 3 - 综艺 -->
+        <a href="https://example.com/variety" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-variety/50/50" alt="综艺图标">
+            </div>
+            <div class="category-name">综艺</div>
+        </a>
+        <!-- 分类图标 4 - 动漫 -->
+        <a href="https://example.com/anime" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-anime/50/50" alt="动漫图标">
+            </div>
+            <div class="category-name">动漫</div>
+        </a>
+        <!-- 分类图标 5 - 纪录片 -->
+        <a href="https://example.com/documentary" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-documentary/50/50" alt="纪录片图标">
+            </div>
+            <div class="category-name">纪录片</div>
+        </a>
+        <!-- 分类图标 6 - 体育 -->
+        <a href="https://example.com/sports" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-sports/50/50" alt="体育图标">
+            </div>
+            <div class="category-name">体育</div>
+        </a>
+        <!-- 分类图标 7 - 音乐 -->
+        <a href="https://example.com/music" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-music/50/50" alt="音乐图标">
+            </div>
+            <div class="category-name">音乐</div>
+        </a>
+        <!-- 分类图标 8 - 游戏 -->
+        <a href="https://example.com/games" class="category-item">
+            <div class="category-icon">
+                <img src="https://collision3550.top/b7307118fb42b64017dea3e5f313a9c8.gif" alt="游戏图标">
+            </div>
+            <div class="category-name">游戏</div>
+        </a>
+		<!-- 分类图标 1 - 电影 -->
+        <a href="https://example.com/movies" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-movie/50/50" alt="电影图标">
+            </div>
+            <div class="category-name">电影</div>
+        </a>
+        <!-- 分类图标 2 - 电视剧 -->
+        <a href="https://example.com/tv" class="category-item">
+            <div class="category-icon">
+                <img src="https://fcw1.site/i/2024/12/31/qu0xc4.gif" alt="电视剧图标">
+            </div>
+            <div class="category-name">电视剧</div>
+        </a>
+        <!-- 分类图标 3 - 综艺 -->
+        <a href="https://example.com/variety" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-variety/50/50" alt="综艺图标">
+            </div>
+            <div class="category-name">综艺</div>
+        </a>
+        <!-- 分类图标 4 - 动漫 -->
+        <a href="https://example.com/anime" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-anime/50/50" alt="动漫图标">
+            </div>
+            <div class="category-name">动漫</div>
+        </a>
+        <!-- 分类图标 5 - 纪录片 -->
+        <a href="https://example.com/documentary" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-documentary/50/50" alt="纪录片图标">
+            </div>
+            <div class="category-name">纪录片</div>
+        </a>
+        <!-- 分类图标 6 - 体育 -->
+        <a href="https://example.com/sports" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-sports/50/50" alt="体育图标">
+            </div>
+            <div class="category-name">体育</div>
+        </a>
+        <!-- 分类图标 7 - 音乐 -->
+        <a href="https://example.com/music" class="category-item">
+            <div class="category-icon">
+                <img src="https://picsum.photos/seed/icon-music/50/50" alt="音乐图标">
+            </div>
+            <div class="category-name">音乐</div>
+        </a>
+        <!-- 分类图标 8 - 游戏 -->
+        <a href="https://example.com/games" class="category-item">
+            <div class="category-icon">
+                <img src="https://collision3550.top/b7307118fb42b64017dea3e5f313a9c8.gif" alt="游戏图标">
+            </div>
+            <div class="category-name">游戏</div>
+        </a>
+    </section>
+    <!-- 最新上映 -->
+    <section class="movie-section">
+        <div class="section-title">
+            <span>最新上映</span>
+            <a href="https://example.com/new-more" class="more-link">更多 <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="movie-grid" id="newMovies">
+            <!-- 电影项目 1 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250705/GBgEMmTD/1100kb/hls/index.m3u8', '羽芮')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250706-1/824dde44544670b9e79ada613cd25723.png" alt="羽芮" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">羽芮</div>
+                        <div class="movie-desc">【羽芮】TMG057 御姐人妻浴巾下的爆乳蜂腰</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">9.0</div>
+                        <div class="movie-duration">33分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 2 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250706/jlET9pPz/1100kb/hls/index.m3u8', '艾儿')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250707-1/806ebbe75881cfbcef2b6bbccc2716da.png" alt="艾儿" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">艾儿</div>
+                        <div class="movie-desc">【艾儿】WTB001 强制妊娠 地方的爸爸需要女儿</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.7</div>
+                        <div class="movie-duration">16分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 3 -->
+            <div class="movie-item" onclick="playVideo('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '董欣')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250709-1/49c9dfee5698598f8b061df8372d66a6.png" alt="董欣" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">董欣</div>
+                        <div class="movie-desc">【董欣】GDCM008 劳模理疗师上</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.4</div>
+                        <div class="movie-duration">19分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 4 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250704/QYQ77Q2k/1100kb/hls/index.m3u8', '素人')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250705-1/1ccd8ead8d1cf9f6b94ce279c5620e6b.png" alt="素人" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">素人</div>
+                        <div class="movie-desc">【素人】PH200 隐形衣 属于你的乱干时刻</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.1</div>
+                        <div class="movie-duration">22分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 5 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250708/g4ZZsRhj/1100kb/hls/index.m3u8', '徐艳')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250709-1/a006cd628db67640f4d6f75917f2e159.png" alt="徐艳" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">徐艳</div>
+                        <div class="movie-desc">【徐艳】MSD0167 操上大运会川妹子闭幕会的骚B特训</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.9</div>
+                        <div class="movie-duration">16分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 6 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250710/YKrj5MGP/1100kb/hls/index.m3u8', '童汐')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250711-1/154b8749ff930f5a82c797390842d1f7.png" alt="童汐" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">童汐</div>
+                        <div class="movie-desc">【童汐】XK8039 少妇白洁1 新婚少妇惨遭迷奸绿帽老公笑脸相迎</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.2</div>
+                        <div class="movie-duration">15分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-// phone
-if (sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('iPhone') > -1 || sUserAgent.indexOf('iPad') > -1 || sUserAgent.indexOf('iPod') > -1 || sUserAgent.indexOf('Windows Phone') > -1) {
-	style +='.dpClass{width: 100%;}';
-	style +='.dpClass img,.dpClass a{width:100%;height:' + phoneHeight + 'px;}';
-	style +='body {padding-top:' + phoneHeight + 'px;padding-bottom:'+ phoneHeight +'px}';
-} else { // pc
-	style +='.dpClass{width: 500px;}';
-	style +='.dpClass img,.dpClass a{width:100%;height:' + pcHeight + 'px;}';
-	style +='body {padding-top:' + pcHeight + 'px;padding-bottom:'+ pcHeight +'px}';
-}
-style +='</style>';
-document.write(style);
-</script>
+    <!-- 脚注 -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://example.com/about">关于我们</a>
+            <a href="https://example.com/contact">联系我们</a>
+            <a href="https://example.com/help">帮助中心</a>
+            <a href="https://example.com/feedback">意见反馈</a>
+        </div>
+        <p>&copy; 2024 影视天堂. All rights reserved.</p>
+        <p>京ICP备12345678号</p>
+    </footer>
 
+    <!-- 视频播放模态框 -->
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeVideo()">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="video-container">
+                <video id="videoPlayer" controls></video>
+                <div class="loading" id="loading" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
 
-<!--&#39030;&#39128; &#37096;&#38271; P85&#26032;&#33889;&#20140;-->
-<div class="dpClass" style="top: 0px;">
-<a href="https://t.me/sexi168/" data-type="link"target="_blank">
-	<img data-type="img" src="https://raw.githubusercontent.com/babacaoxiaoh/shuang/refs/heads/main/images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-07-22%20163839.png">
-</a>
-</div>
+    <script>
+        // 轮播图功能
+        let currentSlide = 0;
+        const carouselInner = document.getElementById('carouselInner');
+        const indicatorsContainer = document.getElementById('carouselIndicators');
+        const totalSlides = 3;
 
-<!--&#24213;&#39128; &#38065;&#22810;&#22810; &#37096;&#38271;-->
-<div  class='dpClass' style="bottom: 0px;">
-<a href="https://5462222kk.vip/')" data-type="link">
-	<img data-type="img" src="https://777eee666eee.com/ece9094f6e774923a8dc2da2e838f53b.gif">
-</a>
-</div>
-<!-- 按钮切换 -->
-<div class="buttons">
-  <button onclick="showPage('single')">热门应用</button>
-  <button onclick="showPage('online')">看片</button>
-  <button onclick="showPage('compet')">直播</button>
-</div>
-<!-- 分类内容：每行4个图片 -->
-<div id="single" class="page active">
-  <div class="grid-container">
-  <div class="grid-item"><a href="https://555838jj.cc:61016/"><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/7/3/14/50/MTAwMTIyXzE3NTE1MjU0NDgyNDA=.gif" alt="澳门新葡京" /><span>澳门新葡京</span></a></div>
-    <div class="grid-item"><a href="https://195-9-39-ozncx.cc/?cid=596553"><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/6/30/10/11/MTAwMTIyXzE3NTEyNDk0ODg1NDQ=.gif" alt="澳门新葡京" /><span>澳门新葡京</span></a></div>
-    <div class="grid-item"><a href="https://77665vv.cc:57777/"><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/7/3/14/51/MTAwMTIyXzE3NTE1MjU0ODk3NDU=.gif" alt="威尼斯" /><span>威尼斯</span></a></div>
-    <div class="grid-item"><a href="https://802-5-xz-waferj.cc/?cid=435166"><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/7/4/17/7/MTAwMTIyXzE3NTE2MjAwMjYzOTU=.gif" alt="澳门威尼斯" /><span>澳门威尼斯</span></a></div>
-    
-    <!-- 第二排 -->
-    <div class="grid-item"><a href="https://bbvvcom0706188.scrydb.com/008dw34"><img src="https://img.alicdn.com/imgextra/i3/4183327079/O1CN01B0QEfs22AEo2jkNFr_!!4183327079.gif" alt="PG国际" /><span>PG国际</span></a></div>
-    <div class="grid-item"><a href="https://ac236volr-9016e9ed74427fd1.elb.ap-east-1.amazonaws.com/161desde336dc/?shareName=161x37"><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/6/6/22/54/MTAwMTIyXzE3NDkyMjE2NTgxNzk=.gif" alt="葡京正版" /><span>葡京正版</span></a></div>
-    <div class="grid-item"><a href="https://xpj079cc08868comxpjggtz.589778.top:8899/ylgg081.htmltitle="><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/6/7/21/40/MTAwMTIyXzE3NDkzMDM2Mjk1NTg=.gif" alt="注册送88" /><span>注册送88</span></a></div>
-    <div class="grid-item"><a href="https://wpqjsx485221820.1gqtdwhsn01g.me:51338/9485.html"><img src="https://e3f49eaa46b57.cdn.sohucs.com/2025/6/27/13/46/MTAwMTIyXzE3NTEwMDMxNzkyNTg=.gif" alt="威尼斯人" /><span>威尼斯人</span></a></div>
+        // 创建指示器
+        for (let i = 0; i < totalSlides; i++) {
+            const indicator = document.createElement('div');
+            indicator.className = `carousel-indicator ${i === 0 ? 'active' : ''}`;
+            indicator.onclick = () => goToSlide(i);
+            indicatorsContainer.appendChild(indicator);
+        }
 
-     <!-- 第三排 -->
-    <div class="grid-item"><a href="https://tikotok-155-cew-17-qzo-37-vivo.su7ultra.山东师范大学.com:13835/m4Z97"><img src="https://img.xmshengchao.com:1688/images/9c34af05-81b9-4d1f-be63-734d70262b44" alt="大发赌场" /><span>大发赌场</span></a></div>
-    <div class="grid-item"><a href="https://daryf.brhku.com/?a=880707t028"><img src="https://raw.githubusercontent.com/xingxing890/ai/refs/heads/main/ai/images/757.avif" alt="免费男同" /><span>注册送666</span></a></div>
-    <div class="grid-item"><a href="https://sp.dskus356.com/"><img src="https://yh.plxao.com/yhgifjiami/200x200-x.gif" alt="PG娱乐" /><span>PG娱乐</span></a></div>
-    <div class="grid-item"><a href="https://146.103.87.104:5030/?dl=fqxb5j"><img src="https://2027.lhggtc.com/508166/200x200.gif" alt="新普娱乐" /><span>新普娱乐</span></a></div>
+        function goToSlide(index) {
+            currentSlide = index;
+            carouselInner.style.transform = `translateX(-${index * 100}%)`;
+            
+            // 更新指示器
+            document.querySelectorAll('.carousel-indicator').forEach((ind, i) => {
+                ind.classList.toggle('active', i === index);
+            });
+        }
 
-     <!-- 第四排 -->
-    <div class="grid-item"><a href="https://456456456456.bitamink.com/?cid=858741"><img src="https://img.alicdn.com/imgextra/i3/4183327079/O1CN01UxOrby22AEo3PLrhk_!!4183327079.gif" alt="澳门葡京" /><span>澳门葡京</span></a></div>
-    <div class="grid-item"><a href="https://yyqq595ky0704130.evm92.com/595qpj33"><img src="https://img.alicdn.com/imgextra/i3/4183327079/O1CN01vEUrLf22AEoYfsdvS_!!4183327079.gif" alt="开元棋牌" /><span>开元棋牌</span></a></div>
-    <div class="grid-item"><a href="https://manus-487-gtbs-winner-ll.天津师范大学.com:52435/789Zj"><img src="https://img.xmshengchao.com:1688/images/b6cb7134-466e-44f6-a857-0203528f4701" alt="必赢国际" /><span>必赢国际</span></a></div>
-    <div class="grid-item"><a href="https://悟空-978c1-t.哦哦哦-唐僧8.com:37988/G1Wdj"><img src="https://img.lanchougroup.com/images/6d272e7a-7cc6-44e2-b511-62bb5befb4a7" alt="凤凰国际" /><span>凤凰国际</span></a></div>
+        // 自动轮播
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        }, 3000);
 
-     <!-- 第五排 -->
-    <div class="grid-item"><a href="https://bmx2.japaneast.cloudapp.azure.com:9798/?cid=6011551"><img src="https://imgsa.baidu.com/forum/pic/item/8c1001e93901213f5dbd29cd12e736d12f2e9511.jpg" alt="PG娱乐" /><span>PG娱乐</span></a></div>
-    <div class="grid-item"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://jklhgfg.varlt.com/200x200.gif" alt="开元棋牌" /><span>开元棋牌</span></a></div>
-    <div class="grid-item"><a href="https://j8vip60.com/"><img src="https://ys.tumwf.com/i/200-200.gif" alt="JB电子" /><span>JB电子</span></a></div>
-    <div class="grid-item"><a href="https://t5816y.com/"><img src="https://wg.plxao.com/i/ty/xm75-2.gif" alt="太阳城" /><span>太阳城</span></a></div>
+        // 视频播放功能
+        let hls = null;
 
-    <!-- 第六排 -->
-    <div class="grid-item"><a href="https://bmx2.japaneast.cloudapp.azure.com:9798/?cid=6011551"><img src="https://pttptt.cc/images/friend/0/740.avif?1751041084" alt="PG娱乐" /><span>PG娱乐</span></a></div>
-    <div class="grid-item"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://pttptt.cc/images/friend/0/742.avif?1751041084" alt="开元棋牌" /><span>开元棋牌</span></a></div>
-    <div class="grid-item"><a href="https://上海-svip大学.大爱无私7988.com:17988/j6Rqj"><img src="https://pttptt.cc/images/friend/0/744.avif?1751041084" alt="JB电子" /><span>注册送99</span></a></div>
-    <div class="grid-item"><a href="https://tycapp9428com08088com.568886.top:8899/tycgg035.html"><img src="https://pttptt.cc/images/friend/0/743.avif?1751041084" alt="太阳城" /><span>国际太阳城</span></a></div>
+        function playVideo(videoUrl, title) {
+            const modal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const loading = document.getElementById('loading');
 
-    
-     <!-- 第七排 -->
-    <div class="grid-item"><a href="https://h67kr.top/"><img src="https://pttptt.cc/images/friend/0/743.avif?1751041084" alt="同城约炮" /><span>新太阳城</span></a></div>
-    <div class="grid-item"><a href="https://ksl20.peklqzb.com/?channelCode=23231172172"><img src="https://os.qddh89.cc/adsimg/tb16.webp" alt="西瓜直播" /><span>涩情直播</span></a></div>
-    <div class="grid-item"><a href="https://d280023xgtjla7.cloudfront.net/?dc=LFHL06"><img src="https://pttptt.cc/images/friend/0/718.avif?1751041084" alt="换友交妻" /><span>换友交妻</span></a></div>
-    <div class="grid-item"><a href="https://xsjro.com:10300/?code=830015&version=v3&downtime=3"><img src="https://os.qddh89.cc/adsimg/tb3.webp" alt="咪色直播" /><span>色色直播</span></a></div>
+            modal.classList.add('active');
+            loading.style.display = 'block';
 
-     <!-- 第八排 -->
-    <div class="grid-item"><a href="https://lests.shakeuu.cc/?uid=21"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/c6f4a09a939942.gif" alt="PG娱乐" /><span>呦女性爱</span></a></div>
-    <div class="grid-item"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/daxionjj.gif" alt="开元棋牌" /><span>呦女下载</span></a></div>
-    <div class="grid-item"><a href="https://gb8oxpz9.wcn52.com/?ttok=cAFX"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/91yule.gif" alt="JB电子" /><span>性爱女孩</span></a></div>
-    <div class="grid-item"><a href="https://ss.matto.cc/?id=hxzzh"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/hihizkkz.gif" alt="太阳城" /><span>女孩爱性</span></a></div>
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
 
-    <!-- 第九排 -->
-    <div class="grid-item"><a href="https://lests.shakeuu.cc/?uid=21"><img src="https://seyoutupian.dqntwl.com/mg/mg150-1.gif" alt="PG娱乐" /><span>呦女性爱</span></a></div>
-    <div class="grid-item"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://dnl382.com/public/icon/3c90c0059b56b4d6df790273817f05d3.gif" alt="开元棋牌" /><span>呦女下载</span></a></div>
-    <div class="grid-item"><a href="https://3oxagthv.520mdz.com/flame/?channelCode=yhbd106"><img src="https://mm-cmbcgw.suppercacheimages.top/LightPicture_y/2025/05/3252f12c20a2886f.cache" alt="JB电子" /><span>浴火女孩</span></a></div>
-    <div class="grid-item"><a href="https://assaff-121235ff12361as.7x0qg.cyou/wf9954saf"><img src="https://img.tupiantuoguan.cc/02.gif" alt="免费看片" /><span>免费看片</span></a></div>
+            if (Hls.isSupported()) {
+                hls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: false,
+                    backBufferLength: 90
+                });
+                hls.loadSource(videoUrl);
+                hls.attachMedia(videoPlayer);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    loading.style.display = 'none';
+                    videoPlayer.play().catch(e => console.log('自动播放失败'));
+                });
 
-	  <div class="grid-item"><a href="https://2hg05l7zh.q7sysksk.top/BFJIQ39F"><img src="https://kf5nmj.thdhypq.xyz/file/turmb-bwzw9.png" alt="小污女" /><span>小污女</span></a></div>
-    <div class="grid-item"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://kf5nmj.thdhypq.xyz/file/tc457-o9442.png" alt="免费呦呦" /><span>免费呦女</span></a></div>
-    <div class="grid-item"><a href="https://d1hxb5gyigq3yu.cloudfront.net/?dc=THBBCMZMFA"><img src="https://kf5nmj.thdhypq.xyz/file/thduq-wvgf0.png" alt="西瓜视频" /><span>西瓜视频</span></a></div>
-    <div class="grid-item"><a href="https://dm1l9s90tgrd0.cloudfront.net/?dc=THBBCMZA"><img src="https://kf5nmj.thdhypq.xyz/file/t7fea-d8yks.png" alt="91撸色" /><span>91撸色</span></a></div>
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        loading.style.display = 'none';
+                        alert('视频加载失败，请稍后重试');
+                    }
+                });
+            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                videoPlayer.src = videoUrl;
+                videoPlayer.addEventListener('loadedmetadata', function() {
+                    loading.style.display = 'none';
+                    videoPlayer.play().catch(e => console.log('自动播放失败'));
+                });
+            } else {
+                loading.style.display = 'none';
+                alert('您的浏览器不支持此视频格式');
+            }
+        }
 
+        function closeVideo() {
+            const modal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            modal.classList.remove('active');
+            videoPlayer.pause();
+            
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+            
+            videoPlayer.src = '';
+        }
 
+        // 跳转链接功能
+        function goToLink(url) {
+            window.location.href = url;
+        }
 
-    
-    <!-- 可以继续补充到5排，共25个 -->
-  </div>
-</div>
-<!-- 看片分类 -->
-<div id="online" class="page">
-  <div class="grid-container">
-   <div class="grid-item"><a href="https://aifun.wiki/guest/apps?ref_id=e187840e-35cc-46fa-b91b-7d024ce856ee"><img src="https://pttptt.cc/images/friend/0/702.avif?1751041084" alt="澳门新葡京" /><span>动漫淫乱</span></a></div>
-    <div class="grid-item"><a href="https://krzif5.dy4qt6g.live/shorteradmin/sys/jt/jump/100076"><img src="https://thumbs4.imagebam.com/94/6d/b4/MEQ0PZ3_t.gif" alt="澳门新葡京" /><span>看看不用钱</span></a></div>
-    <div class="grid-item"><a href="https://yy2805.klasdomstrasdamlopasde.com/ck/54989/1dbz719y2"><img src="https://pttptt.cc/images/friend/0/716.avif?1751041690" alt="威尼斯" /><span>逗淫看片</span></a></div>
-    <div class="grid-item"><a href="https://d2w16paq7f5ds2.cloudfront.net/?dc=CZZ75"><img src="https://pttptt.cc/images/friend/0/763.avif?1751375260" alt="澳门威尼斯" /><span>乱伦平台</span></a></div>
-    
-    <div class="grid-item"><a href="https://c79.tyubfrim.top/chan/GS0707/uTMB"><img src="https://pttptt.cc/images/friend/0/752.avif?1751041084" alt="澳门新葡京" /><span>完全免费</span></a></div>
-    <div class="grid-item"><a href="https://gcc.buptaa.com/404?a=2b7gnt"><img src="https://file.ossfile001.com/GCC/GCC_20240107_100x100.gif" alt="澳门新葡京" /><span>成秂视频</span></a></div>
-    <div class="grid-item"><a href="https://d3vusqc3zsi0j1.cloudfront.net/ykldh001"><img src="https://mm-cmbcgw.suppercacheimages.top/LightPicture_y/2025/06/75fb16985e3dad43.cache" alt="威尼斯" /><span>淫人看看</span></a></div>
-    <div class="grid-item"><a href="https://r7b.g2nsh2qh.top/LCSY1BDU"><img src="https://tulian.vip/i/2025/06/30/686200dc54944.gif" alt="澳门威尼斯" /><span>91看片</span></a></div>
-    
-  <div class="grid-item"><a href="https://kef6c5.2bh5sxq.com/ga/?channelCode=cg048s"><img src="https://mm-cmbcgw.suppercacheimages.top/LightPicture_y/2025/05/1ce8823d94ed559f.cache" alt="澳门新葡京" /><span>巨乳萝莉</span></a></div>
-    <div class="grid-item"><a href="https://d3oqxisay7wrje.cloudfront.net/?dc=LY0136"><img src="https://mm-cmbcgw.suppercacheimages.top/LightPicture_y/2025/06/2a1698a2be1b67c0.cache" alt="萝莉爱爱" /><span>萝莉爱爱</span></a></div>
-    <div class="grid-item"><a href="https://7m4a3.com/url.htm?1144"><img src="https://mm-cmbcgw.suppercacheimages.top/LightPicture_y/2025/05/1ce8823d94ed559f.cache" alt="威尼斯" /><span>看片免费</span></a></div>
-    <div class="grid-item"><a href="https://b8ae.hdpaurw.top/?code=bwdy3&c=23444"><img src="https://imgpublic.ycomesc.live/new/ads/20210818/2021081821282618549.gif" alt="免费看片" /><span>免费看片</span></a></div>
+        // 点击模态框背景关闭
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideo();
+            }
+        });
 
-    <div class="grid-item"><a href="https://lests.shakeuu.cc/?uid=21"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/c6f4a09a939942.gif" alt="PG娱乐" /><span>呦女性爱</span></a></div>
-    <div class="grid-item"><a href="https://27.27797241.vip/?cid=5616728"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/daxionjj.gif" alt="开元棋牌" /><span>呦女下载</span></a></div>
-    <div class="grid-item"><a href="https://gb8oxpz9.wcn52.com/?ttok=cAFX"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/91yule.gif" alt="JB电子" /><span>性爱女孩</span></a></div>
-    <div class="grid-item"><a href="https://ss.matto.cc/?id=hxzzh"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/hihizkkz.gif" alt="太阳城" /><span>女孩爱性</span></a></div>
-  <!-- 继续补充 -->
-  </div>
-</div>
-<!-- 直播分类 -->
-<div id="compet" class="page">
-  <div class="grid-container">
-    <div class="grid-item"><a href="https://999.fyl789.xyz/?proId=1910265869880365057"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/ad880px.gif" alt="全国小姐" /><span>全国小姐</span></a></div>
-    <div class="grid-item"><a href="https://27cosmesa.xyz/?u=Ax0OplDLdEqk"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/91yule.gif" alt="小姐约炮" /><span>小姐约炮</span></a></div>
-    <div class="grid-item"><a href="https://3zsr2.top/"><img src="https://imgs.bbyqx.com:8866/bbbb168/31.qerr.100x100.gif" alt="哔哔直播" /><span>哔哔直播</span></a></div>
-    <div class="grid-item"><a href="https://qsdoq.ljddu.com/?channelCode=411134"><img src="https://www.nufox.top/images/35/asbgai-150x150.gif" alt="爱色播直播" /><span>爱色播直播</span></a></div>
-
-    <div class="grid-item"><a href="https://3zsr2.top/"><img src="https://imgs.bbyqx.com:8866/bbbb168/31.qerr.100x100.gif" alt="哔哔直播" /><span>哔哔直播</span></a></div>
-    <div class="grid-item"><a href="https://206.119.0.68:7002/?750001"><img src="https://45-op-golf.img12345.com/ico/XF2403.gif" alt="人妻直播" /><span>人妻直播</span></a></div>
-    <div class="grid-item"><a href="https://r5qwxof4gs6.ljorvmee.com/jf/?channelCode=dj075"><img src="https://pttptt.cc/images/friend/0/719.avif?1751041084" alt="金凤直播" /><span>性福直播</span></a></div>
-    <div class="grid-item"><a href="https://ss86-14.xyz/?channel=qun6"><img src="https://pttptt.cc/images/friend/0/728.avif?1751041084" alt="金凤直播" /><span>免费直播</span></a></div>
-
-    <div class="grid-item"><a href="https://www.safew52.com/"><img src="https://monkey.ygvyp.com/imgs/p/xm150x150.gif" alt="哔哔直播" /><span>熊猫直播</span></a></div>
-    <div class="grid-item"><a href="https://z8e6dn.cc/?channelCode=9p321j1"><img src="https://guang.ygtu188.com/gif/150x150.gif" alt="爱色播直播" /><span>性爱直播</span></a></div>
-    <div class="grid-item"><a href="https://bs2806.trevovalkrespexil.com/yj/40916/di1x8hbld"><img src="https://pttptt.cc/images/friend/0/748.avif?1751536472" alt="金凤直播" /><span>同秂直播</span></a></div>
-    <div class="grid-item"><a href="https://c312.vcaeaxan.com/chan/max2825/ahwzJ"><img src="https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/4b6420961e31df2b.gif" alt="金凤直播" /><span>逗音直播</span></a></div>
-
-	 
-    <!-- 继续补充至25个 -->
-  </div>
-</div>
-
- <div class="faq">
-<a onclick="addFavorite(window.location,document.title)" href="javascript:void(0)"><div class="faq_scj" id="scj"></div></a>
-<a href="https://t.me/sexi168/" target="_blank"><div class="faq_div" id="guestbook">关于我们</div></a>
-<a href="https://t.me/sexi168/" target="_blank"><div class="faq_div" id="guestbook">  商务合作：@researchLas_460</div></a>
-
-
-<!-- 底部说明 -->
-<div class="footer">
- 声明：本站所有站点收集于全球互联网，内容与本站无关，仅为非大陆地区的境外华裔人士提供参考，若来访者国家法律不允许，请自行离开！
-Warning: The website collected by this website comes from the global Internet. The website content has nothing to do with this site. The website is maintained in the United States and is protected by US law. If the visitor's laws do not allow it, please leave by yourself!
-Copyright © 2020 百万盒子导航. All Rights Reserved.
-</div>
-<script>
-  function showPage(pageId) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-  }
-</script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成');
+        });
+    </script>
 </body>
 </html>

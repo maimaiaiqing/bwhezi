@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>男人天堂</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- 内联关键CSS，减少HTTP请求 -->
     <style>
-        /* 全局样式 */
+        /* 重置样式 */
         * {
             margin: 0;
             padding: 0;
@@ -26,17 +24,36 @@
             min-height: 100vh;
         }
         
-        /* 电脑端居中显示 */
+        /* 电脑端居中显示 - 修复滚动问题 */
         @media (min-width: 768px) {
             body {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
+                position: relative;
+                width: 640px;
+                margin: 20px auto;
                 border-radius: 20px;
                 box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-                max-height: 90vh;
                 overflow-y: auto;
+                min-height: auto;
+                max-height: calc(100vh - 40px);
+            }
+            
+            /* 自定义滚动条样式 */
+            body::-webkit-scrollbar {
+                width: 8px;
+            }
+            
+            body::-webkit-scrollbar-track {
+                background: #1a1a1a;
+                border-radius: 4px;
+            }
+            
+            body::-webkit-scrollbar-thumb {
+                background: #444;
+                border-radius: 4px;
+            }
+            
+            body::-webkit-scrollbar-thumb:hover {
+                background: #555;
             }
         }
         
@@ -139,6 +156,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .category-icon img {
@@ -278,6 +296,7 @@
             align-items: center;
             justify-content: center;
             color: #333;
+            font-size: 20px;
         }
         
         /* 播放器模态框 */
@@ -325,11 +344,41 @@
             width: 100%;
             height: 100%;
             background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .video-container video {
             width: 100%;
             height: 100%;
+            max-height: 80vh;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 错误提示 */
+        .error-message {
+            text-align: center;
+            color: #ff6b6b;
+            padding: 20px;
+        }
+        
+        .error-message i {
+            font-size: 48px;
+            margin-bottom: 10px;
         }
         
         /* 脚注样式 */
@@ -351,24 +400,6 @@
         .footer-links a {
             color: #999;
             text-decoration: none;
-        }
-        
-        /* 加载动画 */
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
     </style>
 </head>
@@ -403,10 +434,9 @@
         </div>
         <div class="carousel-indicators" id="carouselIndicators"></div>
     </section>
-
     <!-- 分类图标 -->
     <section class="category-grid">
-        <!-- 分类图标 1 - 澳门金沙 -->
+       <!-- 分类图标 1 - 澳门金沙 -->
         <a href="https://w7773381.vip/" class="category-item">
             <div class="category-icon">
                 <img src="https://bb56367813.com/cb3b8416501145628dbf309492605e81.gif" alt="澳门金沙">
@@ -444,7 +474,7 @@
         <!-- 分类图标 6 - PG新葡京 -->
         <a href="https://146.103.87.104:5001/?dl=$5bzgh3$CNY$2" class="category-item">
             <div class="category-icon">
-                <img src="https://fcw1.site/i/2025/08/09/x8eel0.gif" alt="PG新葡京">
+                <img src="https://txdy.asdf010.com/i/99/xxpj-200-200.gif" alt="PG新葡京">
             </div>
             <div class="category-name">PG新葡京</div>
         </a>
@@ -462,9 +492,132 @@
             </div>
             <div class="category-name">澳门银河</div>
         </a>
-		
     </section>
-<div class="mm-content">
+    <!-- 热门推荐 -->
+    <section class="movie-section">
+        <div class="section-title">
+            <span>热门推荐</span>
+            <a href="https://maimaiaiqing.github.io/bwhezi/" class="more-link">每日一更<i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="movie-grid" id="hotMovies">
+            <!-- 电影项目 1 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250710/nnw5e4wY/1100kb/hls/index.m3u8', '佳芯')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250711-1/d3fa18e1e1ac1fc4454c44895f91bad6.png" alt="佳芯" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">佳芯</div>
+                        <div class="movie-desc">【佳芯】XKG083 陌陌约炮性感瑜伽教练</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">9.2</div>
+                        <div class="movie-duration">23分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 2 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250716/xlY9EdpB/2166kb/hls/index.m3u8', '金宝娜')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250712-1/2079211cbc3066a8344dcc6c47d79d9a.png" alt="金宝娜" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">金宝娜</div>
+                        <div class="movie-desc">【金宝娜 】DY03-EP2 我带男友去前男友家饭店借住，结果男友恶作剧，要我在前男友背后</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.8</div>
+                        <div class="movie-duration">50分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 3 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250716/VQkVhaJj/2113kb/hls/index.m3u8', '沈娜娜')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250717-1/5cb54cb00edf78833caad5517e1ed32f.png" alt="沈娜娜" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">沈娜娜</div>
+                        <div class="movie-desc">【沈娜娜】MCY0143 迷药催眠性感新婚嫂子</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.5</div>
+                        <div class="movie-duration">23分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 4 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250716/t3OBpReF/2171kb/hls/index.m3u8', '佳芯')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250717-1/bb33edbaddc8b08190dae5d5c9f2a967.png" alt="佳芯" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">佳芯</div>
+                        <div class="movie-desc">【佳芯】JDYL016 快递员侵犯女主播</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.3</div>
+                        <div class="movie-duration">32分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 5 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250715/PstyElYL/1100kb/hls/index.m3u8', '羽芮')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250716-1/1d1b07a5ba225c355938246fcef1df78.png" alt="羽芮" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">羽芮</div>
+                        <div class="movie-desc">【羽芮】TMW120 情侣考验赛在男友面前被干到高潮</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">8.0</div>
+                        <div class="movie-duration">34分钟</div>
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- 电影项目 6 -->
+            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250715/0SqSKOYv/1100kb/hls/index.m3u8', '国产经典四级片')">
+                <img src="https://jpgjingpinx1.top/upload/vod/20250716-1/96bd3a6065c7a17a5d9851a449ab63ad.png" alt="国产经典四级片" class="movie-poster">
+                <div class="movie-content">
+                    <div>
+                        <div class="movie-title">国产经典四级片</div>
+                        <div class="movie-desc">【国产经典四级片】三点全露 在VCD碟片不能播的片段</div>
+                    </div>
+                    <div class="movie-meta">
+                        <div class="movie-rating">7.8</div>
+                        <div class="movie-duration">23分钟</div>
+
+                    </div>
+                </div>
+                <div class="play-overlay">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+	<div class="mm-content">
 <div class="row">
 <style>
     .hf60{
@@ -585,250 +738,11 @@
 <!--686 PG&#23089;&#20048;&#22478;-->
 <div><a href="https://23.99.108.189"target="_blank">
 <img class="hf120" src="https://imgoss820.top/2929-960x120.gif" border="0" width="100%" style="border: 1px inset #f58899"></a></div>
-    <!-- 热门推荐 -->
-    <section class="movie-section">
-        <div class="section-title">
-            <span>热门推荐</span>
-            <a href="https://example.com/hot-more" class="more-link">更多 <i class="fas fa-chevron-right"></i></a>
-        </div>
-        <div class="movie-grid" id="hotMovies">
-            <!-- 电影项目 1 -->
-            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250710/nnw5e4wY/1100kb/hls/index.m3u8', '佳芯')">
-                <img src="https://jpgjingpinx1.top/upload/vod/20250711-1/d3fa18e1e1ac1fc4454c44895f91bad6.png" alt="佳芯" class="movie-poster">
-                <div class="movie-content">
-                    <div>
-                        <div class="movie-title">佳芯</div>
-                        <div class="movie-desc">【佳芯】XKG083 陌陌约炮性感瑜伽教练</div>
-                    </div>
-                    <div class="movie-meta">
-                        <div class="movie-rating">9.2</div>
-                        <div class="movie-duration">23分钟</div>
-                    </div>
-                </div>
-                <div class="play-overlay">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- 电影项目 2 -->
-            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250716/xlY9EdpB/2166kb/hls/index.m3u8', '金宝娜')">
-                <img src="https://jpgjingpinx1.top/upload/vod/20250712-1/2079211cbc3066a8344dcc6c47d79d9a.png" alt="金宝娜" class="movie-poster">
-                <div class="movie-content">
-                    <div>
-                        <div class="movie-title">金宝娜</div>
-                        <div class="movie-desc">【金宝娜 】DY03-EP2 我带男友去前男友家饭店借住，结果男友恶作剧，要我在前男友背后</div>
-                    </div>
-                    <div class="movie-meta">
-                        <div class="movie-rating">8.8</div>
-                        <div class="movie-duration">50分钟</div>
-                    </div>
-                </div>
-                <div class="play-overlay">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- 电影项目 3 -->
-            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250716/VQkVhaJj/2113kb/hls/index.m3u8', '沈娜娜')">
-                <img src="https://jpgjingpinx1.top/upload/vod/20250717-1/5cb54cb00edf78833caad5517e1ed32f.png" alt="沈娜娜" class="movie-poster">
-                <div class="movie-content">
-                    <div>
-                        <div class="movie-title">沈娜娜</div>
-                        <div class="movie-desc">【沈娜娜】MCY0143 迷药催眠性感新婚嫂子</div>
-                    </div>
-                    <div class="movie-meta">
-                        <div class="movie-rating">8.5</div>
-                        <div class="movie-duration">23分钟</div>
-                    </div>
-                </div>
-                <div class="play-overlay">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- 电影项目 4 -->
-            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250716/t3OBpReF/2171kb/hls/index.m3u8', '佳芯')">
-                <img src="https://jpgjingpinx1.top/upload/vod/20250717-1/bb33edbaddc8b08190dae5d5c9f2a967.png" alt="佳芯" class="movie-poster">
-                <div class="movie-content">
-                    <div>
-                        <div class="movie-title">佳芯</div>
-                        <div class="movie-desc">【佳芯】JDYL016 快递员侵犯女主播</div>
-                    </div>
-                    <div class="movie-meta">
-                        <div class="movie-rating">8.3</div>
-                        <div class="movie-duration">32分钟</div>
-                    </div>
-                </div>
-                <div class="play-overlay">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- 电影项目 5 -->
-            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250715/PstyElYL/1100kb/hls/index.m3u8', '羽芮')">
-                <img src="https://jpgjingpinx1.top/upload/vod/20250716-1/1d1b07a5ba225c355938246fcef1df78.png" alt="羽芮" class="movie-poster">
-                <div class="movie-content">
-                    <div>
-                        <div class="movie-title">羽芮</div>
-                        <div class="movie-desc">【羽芮】TMW120 情侣考验赛在男友面前被干到高潮</div>
-                    </div>
-                    <div class="movie-meta">
-                        <div class="movie-rating">8.0</div>
-                        <div class="movie-duration">34分钟</div>
-                    </div>
-                </div>
-                <div class="play-overlay">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- 电影项目 6 -->
-            <div class="movie-item" onclick="playVideo('https://jpxm3u8.com/20250715/0SqSKOYv/1100kb/hls/index.m3u8', '国产经典四级片')">
-                <img src="https://jpgjingpinx1.top/upload/vod/20250716-1/96bd3a6065c7a17a5d9851a449ab63ad.png" alt="国产经典四级片" class="movie-poster">
-                <div class="movie-content">
-                    <div>
-                        <div class="movie-title">国产经典四级片</div>
-                        <div class="movie-desc">【国产经典四级片】三点全露 在VCD碟片不能播的片段</div>
-                    </div>
-                    <div class="movie-meta">
-                        <div class="movie-rating">7.8</div>
-                        <div class="movie-duration">23分钟</div>
-                    </div>
-                </div>
-                <div class="play-overlay">
-                    <div class="play-icon">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-<!-- 分类图标 -->
-    <section class="category-grid">
-        <!-- 分类图标 1 - 电影 -->
-        <a href="https://example.com/movies" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-movie/50/50" alt="电影图标">
-            </div>
-            <div class="category-name">电影</div>
-        </a>
-        <!-- 分类图标 2 - PG娱乐城 -->
-        <a href="https://example.com/tv" class="category-item">
-            <div class="category-icon">
-                <img src="https://fcw1.site/i/2024/12/31/qu0xc4.gif" alt="PG娱乐城图标">
-            </div>
-            <div class="category-name">PG娱乐城</div>
-        </a>
-        <!-- 分类图标 3 - 太阳城 -->
-        <a href="https://example.com/variety" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-variety/50/50" alt="太阳城图标">
-            </div>
-            <div class="category-name">太阳城</div>
-        </a>
-        <!-- 分类图标 4 - 澳门威尼斯 -->
-        <a href="https://example.com/anime" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-anime/50/50" alt="澳门威尼斯图标">
-            </div>
-            <div class="category-name">澳门威尼斯</div>
-        </a>
-        <!-- 分类图标 5 - 官方新葡京 -->
-        <a href="https://example.com/documentary" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-documentary/50/50" alt="官方新葡京图标">
-            </div>
-            <div class="category-name">官方新葡京</div>
-        </a>
-        <!-- 分类图标 6 - PG新葡京 -->
-        <a href="https://example.com/sports" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-sports/50/50" alt="PG新葡京图标">
-            </div>
-            <div class="category-name">PG新葡京</div>
-        </a>
-        <!-- 分类图标 7 - 澳门新威尼斯 -->
-        <a href="https://example.com/music" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-music/50/50" alt="澳门新威尼斯图标">
-            </div>
-            <div class="category-name">澳门新威尼斯</div>
-        </a>
-        <!-- 分类图标 8 - 澳门银河 -->
-        <a href="https://example.com/games" class="category-item">
-            <div class="category-icon">
-                <img src="https://collision3550.top/b7307118fb42b64017dea3e5f313a9c8.gif" alt="澳门银河图标">
-            </div>
-            <div class="category-name">澳门银河</div>
-        </a>
-		<!-- 分类图标 1 - 电影 -->
-        <a href="https://example.com/movies" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-movie/50/50" alt="电影图标">
-            </div>
-            <div class="category-name">电影</div>
-        </a>
-        <!-- 分类图标 2 - PG娱乐城 -->
-        <a href="https://example.com/tv" class="category-item">
-            <div class="category-icon">
-                <img src="https://fcw1.site/i/2024/12/31/qu0xc4.gif" alt="PG娱乐城图标">
-            </div>
-            <div class="category-name">PG娱乐城</div>
-        </a>
-        <!-- 分类图标 3 - 太阳城 -->
-        <a href="https://example.com/variety" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-variety/50/50" alt="太阳城图标">
-            </div>
-            <div class="category-name">太阳城</div>
-        </a>
-        <!-- 分类图标 4 - 澳门威尼斯 -->
-        <a href="https://example.com/anime" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-anime/50/50" alt="澳门威尼斯图标">
-            </div>
-            <div class="category-name">澳门威尼斯</div>
-        </a>
-        <!-- 分类图标 5 - 官方新葡京 -->
-        <a href="https://example.com/documentary" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-documentary/50/50" alt="官方新葡京图标">
-            </div>
-            <div class="category-name">官方新葡京</div>
-        </a>
-        <!-- 分类图标 6 - PG新葡京 -->
-        <a href="https://example.com/sports" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-sports/50/50" alt="PG新葡京图标">
-            </div>
-            <div class="category-name">PG新葡京</div>
-        </a>
-        <!-- 分类图标 7 - 澳门新威尼斯 -->
-        <a href="https://example.com/music" class="category-item">
-            <div class="category-icon">
-                <img src="https://picsum.photos/seed/icon-music/50/50" alt="澳门新威尼斯图标">
-            </div>
-            <div class="category-name">澳门新威尼斯</div>
-        </a>
-        <!-- 分类图标 8 - 澳门银河 -->
-        <a href="https://example.com/games" class="category-item">
-            <div class="category-icon">
-                <img src="https://collision3550.top/b7307118fb42b64017dea3e5f313a9c8.gif" alt="澳门银河图标">
-            </div>
-            <div class="category-name">澳门银河</div>
-        </a>
-    </section>
     <!-- 最新上映 -->
     <section class="movie-section">
         <div class="section-title">
             <span>最新上映</span>
-            <a href="https://example.com/new-more" class="more-link">更多 <i class="fas fa-chevron-right"></i></a>
+            <a href="https://maimaiaiqing.github.io/bwhezi/" class="more-link">每日一更<i class="fas fa-chevron-right"></i></a>
         </div>
         <div class="movie-grid" id="newMovies">
             <!-- 电影项目 1 -->
@@ -947,39 +861,58 @@
             </div>
         </div>
     </section>
-
     <!-- 脚注 -->
     <footer>
         <div class="footer-links">
-            <a href="https://example.com/about">关于我们</a>
-            <a href="https://example.com/contact">联系我们</a>
-            <a href="https://example.com/help">帮助中心</a>
-            <a href="https://example.com/feedback">意见反馈</a>
+            
+            <a href="https://t.me/ky920821">商务渠道合作</a>
+            
         </div>
-        <p>&copy; 2024 影视天堂. All rights reserved.</p>
+        <p>&copy; 2024 男人天堂. All rights reserved.</p>
         <p>京ICP备12345678号</p>
     </footer>
-
     <!-- 视频播放模态框 -->
     <div class="modal" id="videoModal">
         <div class="modal-content">
             <div class="modal-close" onclick="closeVideo()">
                 <i class="fas fa-times"></i>
             </div>
-            <div class="video-container">
-                <video id="videoPlayer" controls></video>
-                <div class="loading" id="loading" style="display: none;"></div>
+            <div class="video-container" id="videoContainer">
+                <!-- 视频播放器将在这里动态创建 -->
             </div>
         </div>
     </div>
-
+    <!-- 延迟加载外部库 -->
+    <script>
+        // 延迟加载外部库，加快首屏渲染
+        function loadExternalLibraries() {
+            // 加载Font Awesome
+            const faLink = document.createElement('link');
+            faLink.rel = 'stylesheet';
+            faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+            document.head.appendChild(faLink);
+            
+            // 加载HLS.js
+            const hlsScript = document.createElement('script');
+            hlsScript.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+            hlsScript.onload = function() {
+                console.log('HLS.js loaded');
+            };
+            document.head.appendChild(hlsScript);
+        }
+        
+        // 页面加载完成后延迟加载外部库
+        window.addEventListener('load', function() {
+            setTimeout(loadExternalLibraries, 100);
+        });
+    </script>
     <script>
         // 轮播图功能
         let currentSlide = 0;
         const carouselInner = document.getElementById('carouselInner');
         const indicatorsContainer = document.getElementById('carouselIndicators');
         const totalSlides = 3;
-
+        
         // 创建指示器
         for (let i = 0; i < totalSlides; i++) {
             const indicator = document.createElement('div');
@@ -987,7 +920,7 @@
             indicator.onclick = () => goToSlide(i);
             indicatorsContainer.appendChild(indicator);
         }
-
+        
         function goToSlide(index) {
             currentSlide = index;
             carouselInner.style.transform = `translateX(-${index * 100}%)`;
@@ -997,93 +930,275 @@
                 ind.classList.toggle('active', i === index);
             });
         }
-
+        
         // 自动轮播
         setInterval(() => {
             currentSlide = (currentSlide + 1) % totalSlides;
             goToSlide(currentSlide);
         }, 3000);
-
+        
         // 视频播放功能
+        let currentVideo = null;
         let hls = null;
-
+        
         function playVideo(videoUrl, title) {
             const modal = document.getElementById('videoModal');
-            const videoPlayer = document.getElementById('videoPlayer');
-            const loading = document.getElementById('loading');
-
+            const videoContainer = document.getElementById('videoContainer');
+            
             modal.classList.add('active');
-            loading.style.display = 'block';
-
-            if (hls) {
-                hls.destroy();
-                hls = null;
-            }
-
-            if (Hls.isSupported()) {
-                hls = new Hls({
-                    debug: false,
-                    enableWorker: true,
-                    lowLatencyMode: false,
-                    backBufferLength: 90
-                });
-                hls.loadSource(videoUrl);
-                hls.attachMedia(videoPlayer);
+            
+            // 清空容器
+            videoContainer.innerHTML = '<div class="loading"></div>';
+            
+            // 检查视频格式
+            if (videoUrl.includes('.m3u8')) {
+                // M3U8格式，使用HLS.js
+                if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                    try {
+                        // 销毁之前的实例
+                        if (hls) {
+                            hls.destroy();
+                        }
+                        
+                        // 创建video元素
+                        const video = document.createElement('video');
+                        video.controls = true;
+                        video.autoplay = true;
+                        video.playsInline = true; // 移动端内联播放
+                        video.style.width = '100%';
+                        video.style.height = '100%';
+                        video.style.maxHeight = '80vh';
+                        video.setAttribute('webkit-playsinline', ''); // iOS支持
+                        video.setAttribute('playsinline', ''); // 标准属性
+                        
+                        // 创建HLS实例
+                        hls = new Hls({
+                            debug: false,
+                            enableWorker: true,
+                            lowLatencyMode: false,
+                            backBufferLength: 90,
+                            maxBufferLength: 30,
+                            maxMaxBufferLength: 60,
+                            startLevel: -1,
+                            autoStartLoad: true
+                        });
+                        
+                        hls.loadSource(videoUrl);
+                        hls.attachMedia(video);
+                        
+                        hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+                            console.log('Media attached');
+                        });
+                        
+                        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                            videoContainer.innerHTML = '';
+                            videoContainer.appendChild(video);
+                            // 尝试播放
+                            const playPromise = video.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(error => {
+                                    console.log('Auto-play failed:', error);
+                                    // 显示播放按钮，让用户手动播放
+                                    video.removeAttribute('autoplay');
+                                    videoContainer.innerHTML = '';
+                                    videoContainer.appendChild(video);
+                                });
+                            }
+                        });
+                        
+                        hls.on(Hls.Events.ERROR, function(event, data) {
+                            console.error('HLS Error:', data);
+                            if (data.fatal) {
+                                switch(data.type) {
+                                    case Hls.ErrorTypes.NETWORK_ERROR:
+                                        console.log('Network error, trying to recover...');
+                                        hls.startLoad();
+                                        break;
+                                    case Hls.ErrorTypes.MEDIA_ERROR:
+                                        console.log('Media error, trying to recover...');
+                                        hls.recoverMediaError();
+                                        break;
+                                    default:
+                                        showError('视频加载失败，请稍后重试');
+                                        break;
+                                }
+                            }
+                        });
+                        
+                    } catch (error) {
+                        console.error('HLS Error:', error);
+                        showError('视频播放器初始化失败');
+                    }
+                } else {
+                    // 不支持HLS.js，尝试原生播放
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.maxHeight = '80vh';
+                    video.setAttribute('webkit-playsinline', '');
+                    video.setAttribute('playsinline', '');
+                    
+                    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                        video.src = videoUrl;
+                        video.addEventListener('loadedmetadata', function() {
+                            videoContainer.innerHTML = '';
+                            videoContainer.appendChild(video);
+                            const playPromise = video.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(error => {
+                                    console.log('Auto-play failed:', error);
+                                    video.removeAttribute('autoplay');
+                                    videoContainer.innerHTML = '';
+                                    videoContainer.appendChild(video);
+                                });
+                            }
+                        });
+                        video.addEventListener('error', function() {
+                            showError('视频加载失败');
+                        });
+                    } else {
+                        showError('您的浏览器不支持此视频格式');
+                    }
+                }
+            } else {
+                // 普通MP4格式
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.maxHeight = '80vh';
+                video.setAttribute('webkit-playsinline', '');
+                video.setAttribute('playsinline', '');
+                video.src = videoUrl;
                 
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    loading.style.display = 'none';
-                    videoPlayer.play().catch(e => console.log('自动播放失败'));
-                });
-
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        loading.style.display = 'none';
-                        alert('视频加载失败，请稍后重试');
+                video.addEventListener('loadedmetadata', function() {
+                    videoContainer.innerHTML = '';
+                    videoContainer.appendChild(video);
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log('Auto-play failed:', error);
+                            video.removeAttribute('autoplay');
+                            videoContainer.innerHTML = '';
+                            videoContainer.appendChild(video);
+                        });
                     }
                 });
-            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                videoPlayer.src = videoUrl;
-                videoPlayer.addEventListener('loadedmetadata', function() {
-                    loading.style.display = 'none';
-                    videoPlayer.play().catch(e => console.log('自动播放失败'));
+                
+                video.addEventListener('error', function() {
+                    showError('视频加载失败');
                 });
-            } else {
-                loading.style.display = 'none';
-                alert('您的浏览器不支持此视频格式');
             }
+            
+            currentVideo = videoUrl;
         }
-
+        
+        function showError(message) {
+            const videoContainer = document.getElementById('videoContainer');
+            videoContainer.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>${message}</p>
+                    <button onclick="closeVideo()" style="margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
+                </div>
+            `;
+        }
+        
         function closeVideo() {
             const modal = document.getElementById('videoModal');
-            const videoPlayer = document.getElementById('videoPlayer');
+            const videoContainer = document.getElementById('videoContainer');
             
             modal.classList.remove('active');
-            videoPlayer.pause();
             
+            // 停止视频播放
+            if (currentVideo) {
+                const video = videoContainer.querySelector('video');
+                if (video) {
+                    video.pause();
+                }
+            }
+            
+            // 销毁HLS实例
             if (hls) {
                 hls.destroy();
                 hls = null;
             }
             
-            videoPlayer.src = '';
+            // 清空容器
+            videoContainer.innerHTML = '';
+            currentVideo = null;
         }
-
+        
         // 跳转链接功能
         function goToLink(url) {
             window.location.href = url;
         }
-
+        
         // 点击模态框背景关闭
         document.getElementById('videoModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeVideo();
             }
         });
-
-        // 页面加载完成后初始化
+        
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideo();
+            }
+        });
+        
+        // 页面加载完成后的优化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面加载完成');
+            
+            // 预加载关键资源
+            const preloadImages = [
+                'https://picsum.photos/seed/banner1/800/450',
+                'https://picsum.photos/seed/banner2/800/450',
+                'https://picsum.photos/seed/banner3/800/450'
+            ];
+            
+            preloadImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
         });
+        
+        // 检测设备类型并优化
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // 移动端优化
+        if (isMobile()) {
+            // 禁用双击缩放
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            });
+            
+            // 优化视频播放
+            document.addEventListener('click', function(e) {
+                const movieItem = e.target.closest('.movie-item');
+                if (movieItem && !e.target.closest('.play-overlay')) {
+                    // 延迟播放，避免和点击事件冲突
+                    setTimeout(() => {
+                        const videoUrl = movieItem.getAttribute('data-video');
+                        const title = movieItem.getAttribute('data-title');
+                        if (videoUrl && title) {
+                            playVideo(videoUrl, title);
+                        }
+                    }, 100);
+                }
+            });
+        }
     </script>
 </body>
 </html>
